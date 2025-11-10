@@ -60,7 +60,7 @@ paths:
               $ref: '#/components/schemas/Subscription'
       responses:
         '200':
-          description: Успешный запрос с возвращением созданного объекта
+          description: Успешный запрос с возвращением обновленного объекта
           content:
             application/json:
               schema:
@@ -86,7 +86,7 @@ paths:
           example: 1
       responses:
         '200':
-          description: Ответ с подпиской
+          description: Возвращение подписки, запрошенной по id
           content:
             application/json:
               schema:
@@ -96,7 +96,7 @@ paths:
         '500':
           description: Неудачный запрос на БД / Ошибка сериализации ответа
     delete:
-      summary: Получить подписку по id
+      summary: Удалить подписку по id
       tags:
         - Subscriptions
       operationId: deleteSubscriptionById
@@ -164,7 +164,7 @@ paths:
                 type: string
                 example: 1050
         '400':
-          description: Неправильный формат начала и/или конца периода
+          description: Неправильный формат startDate и/или endDate
         '405':
           description: Неправильный метод
         '500':
