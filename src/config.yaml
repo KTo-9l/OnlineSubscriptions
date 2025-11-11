@@ -1,7 +1,0 @@
-server:
-  port: :8080
-db:
-  driverName: postgres
-  connectionString: postgresql://postgres:root@localhost:5432/subscriptions?sslmode=disable
-logs:
-  path: "logs.log"

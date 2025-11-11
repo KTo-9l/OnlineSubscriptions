@@ -2,11 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 
-	"gopkg.in/yaml.v3"
-
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -23,7 +24,7 @@ type config struct {
 	} `yaml:"logs"`
 }
 
-const configPath = "config.yaml"
+const configPath = "config.env"
 
 var (
 	db  *sql.DB
@@ -31,17 +32,23 @@ var (
 )
 
 func loadConfig() (err error) {
-	cfgBytes, err := os.ReadFile(configPath)
+	err = godotenv.Load(configPath)
 	if err != nil {
-		log.Printf("[Config] Reading config file error: %s", err.Error())
+		fmt.Printf("[Config] Loading .env file error: %s", err.Error())
 		return
 	}
 
-	err = yaml.Unmarshal(cfgBytes, &cfg)
-	if err != nil {
-		log.Printf("[Config] Unmarshalling config error: %s", err.Error())
-		return
+	cfg.Server.Port = fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
+	if cfg.Server.Port == ":" {
+		return errors.New("empty server port was received from config.env")
 	}
+
+	cfg.DB.DriverName = os.Getenv("DB_DRIVER_NAME")
+	cfg.DB.ConnectionString = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=%s",
+		os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"), os.Getenv("DB_SSL"))
+
+	cfg.Logs.Path = os.Getenv("LOGS_PATH")
+
 	return
 }
 
